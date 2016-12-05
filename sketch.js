@@ -1,18 +1,41 @@
 var vids = [];
-var vidsSize;
 var frameRate;
 
 var table;
-function preload() {
-  createVideos();
-  setupIgnition();
 
-  table = loadTable("library.csv", "csv", "header");
-}
+var speedRate = 1;
 
+var currI = 0;
+var currJ = 0;
+var currK = 0;
+
+var speedometer;
 var engineStart;
 var engineStall;
 var engineFinish;
+
+var right = "right";
+var left = "left";
+var neutral = "default";
+
+var gasVal = 0;
+var brakeVal = 0;
+var ignitionVal = 0;
+
+var power = 0;
+var velocity = 0;
+var speed = 0;
+var direction = "default";
+var drag = 0.992;
+var acceleration;
+
+function preload() {
+  setupIgnition();
+  table = loadTable("library.csv", "csv", "header");
+  console.log("finished preload");
+
+}
+
 function setupIgnition()
 {
 	engineStart = loadSound("/engine_sounds/enginestart.wav");
@@ -20,12 +43,15 @@ function setupIgnition()
   engineFinish = loadSound("/engine_sounds/enginefinish.wav");
 }
 
-var speedometer;
 function setup() {
   noCanvas();
-
   serialSetup();
+
+
+  initLibs();
   fillLibrary();
+
+  console.log("library finished");
 
   speedometer = select("#speedometer");
   speedometer.value(0);
@@ -40,18 +66,7 @@ function serialSetup() {
   serial.open("/dev/cu.usbmodemFD131"); // open a port
 }
 
-var right = "RIGHT";
-var left = "LEFT";
-var neutral = "DEFAULT";
 
-var gasVal = 0;
-var brakeVal = 0;
-var ignitionVal = 0;
-
-var power = 0;
-var velocity = 0;
-var drag = 0.992;
-var acceleration;
 
 function serialEvent() {
   var inString = serial.readLine();
@@ -63,12 +78,12 @@ function serialEvent() {
 
     if (speedRate < 3) {
       speedRate += 0.20*gasVal;
-      vids[currIndex].speed(speedRate);
+      movieLib[currI][currJ][currK].speed(speedRate);
     }
 
     if (speedRate >= 0) {
       speedRate -= 0.35*brakeVal;
-      vids[currIndex].speed(speedRate);
+      movieLib[currI][currJ][currK].speed(speedRate);
     }
     // console.log(vids[currIndex].speed());
   }
@@ -81,11 +96,13 @@ function serialEvent() {
   }
   else if (inString.length > 0) {
     if (inString === right) {
-      turnWheelLeft(false);
+      direction = "right";
+      turnWheel();
     } else if (inString === left) {
-      turnWheelLeft(true);
+      direction = "left";
+      turnWheel();
     } else if (inString === neutral) {
-
+      direction = "straight";
     }
   }
 }
@@ -97,9 +114,6 @@ function printList(portList) {
   }
 }
 
-
-var currIndex = 0;
-var speedRate = 1;
 
 function draw()
 {
@@ -113,6 +127,7 @@ function updateSpeed()
     if(power < 0.1)
     {
       power+=0.0005;
+
     }
     velocity += power;
   }
@@ -128,52 +143,95 @@ function updateSpeed()
 
   var roundedVelocity = Math.round(velocity);
   speedometer.html(roundedVelocity + " MPH");
+  speed = roundedVelocity
 }
 
 function keyPressed() {
+
+  // print(direction);
   if (keyCode === LEFT_ARROW) {
-    // turnWheelLeft(true);
+    direction = "left";
+    turnWheel();
   } else if (keyCode === RIGHT_ARROW) {
-    turnWheelLeft(false);
+    direction = "right";
+    turnWheel();
   } else if (keyCode === UP_ARROW) {
     power+=0.001;
-
     if (speedRate < 3) {
       speedRate += 0.10;
-      vids[currIndex].speed(speedRate);
+      movieLib[currI][currJ][currK].speed(speedRate);
     }
   } else if (keyCode === DOWN_ARROW) {
     velocity *= 0.9;
     if (speedRate >= 0) {
       speedRate -= 0.10;
-      vids[currIndex].speed(speedRate);
+      movieLib[currI][currJ][currK].speed(speedRate);
     }
+  } else if (keyCode === ENTER)
+  {
+    start();
   }
 }
 
 
-function turnWheelLeft(left) // true if left, false if right
+function turnWheel() // true if left, false if right
 {
-  vids[currIndex].pause();
-  vids[currIndex].hide();
-  if (!left) {
-    if (currIndex === vidsSize) {
-      currIndex = 0;
-    } else {
-      currIndex++;
-    }
-  } else {
-    if (currIndex === 0) {
-      currIndex = vidsSize;
-    } else {
-      currIndex--;
-    }
-  }
-  vids[currIndex].speed(speedRate);
-  vids[currIndex].show();
-  vids[currIndex].loop();
+  print("i: " + currI);
+  print("j: " + currJ);
+  print("k: " + currK);
+  print(movieLib[currI].length);
+  movieLib[currI][currJ][currK].pause();
+  movieLib[currI][currJ][currK].hide();
+  getNewIndices();
+  movieLib[currI][currJ][currK].speed(speedRate);
+  movieLib[currI][currJ][currK].show();
+  movieLib[currI][currJ][currK].loop();
 }
 
+function velocityIntoCategory()
+{
+  if(speed >= 0 && speed < 15)
+  {
+    return 0;
+  }
+  else if(speed >= 15 && speed < 40)
+  {
+    return 1;
+  }
+  else if(speed >= 40 && speed < 90)
+  {
+    return 2;
+  }
+  else if(speed >= 90 && speed < 150)
+  {
+    return 3;
+  }
+  else if(speed >= 150)
+  {
+    return 3;
+  }
+
+}
+
+function getNewIndices()
+{
+  currI = velocityIntoCategory();
+  println("current i: " + currI);
+  println(direction);
+  currJ = directionToInt(direction);
+  println("current j: " + currJ);
+
+  var currLib = movieLib[currI][currJ];
+  var currLibLength = currLib.length;
+
+  currK = getRandomInt(0, currLibLength-1);
+  println("current K: " + currK);
+
+}
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 var isEngineOn = false;
 var isEngineTurningOn = false;
@@ -184,8 +242,8 @@ function startCar(iVal)//iVal serial value from 0-100
     //do nothing
     isEngineTurningOn = false;
     isEngineOn = false;
-    vids[currIndex].hide();
-    vids[currIndex].pause();
+    movieLib[currI][currJ][currK].hide();
+    movieLib[currI][currJ][currK].pause();
   }
   else if(iVal >10 && iVal<=80)
   {
@@ -224,12 +282,12 @@ function startCar(iVal)//iVal serial value from 0-100
 
 function start()
 {
-  vids[currIndex].show();
-  vids[currIndex].play();
+  movieLib[currI][currJ][currK].show();
+  movieLib[currI][currJ][currK].loop();
 }
 
 function stop()
 {
- 	vids[currIndex].pause();
-  vids[currIndex].hide();
+ 	movieLib[currI][currJ][currK].pause();
+  movieLib[currI][currJ][currK].hide();
 }

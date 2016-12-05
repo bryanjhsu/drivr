@@ -1,5 +1,26 @@
 var library = [];
 
+var rightTurnLibrary = [];
+var leftTurnLibrary = [];
+
+var dataLib = [];
+var movieLib = [];
+
+function initLibs()
+{
+  //speed for  0 - 5
+  for(var i = 0; i < 6 ; i++)
+  {
+    dataLib[i] = [];
+    movieLib[i] = [];
+    for(var j = 0; j < 3; j++)
+    {
+      dataLib[i][j] = [];
+      movieLib[i][j] = [];
+    }
+  }
+}
+
 function fillLibrary()
 {
   for (var r = 0; r < table.getRowCount(); r++)
@@ -7,31 +28,65 @@ function fillLibrary()
     var newClip = new Clip
     newClip.setId(table.getString(r,0));
     newClip.setDirection(table.getString(r,1));
-    newClip.setSpecial(table.getString(r,2));
-    newClip.setSpeed(table.getString(r,3));
+    newClip.setSpeed(table.getString(r,2));
+    newClip.setSpecial(table.getString(r,3));
     newClip.setFileName(table.getString(r,4));
     newClip.setMovie(table.getString(r,5));
     newClip.setYear(table.getString(r,6));
     newClip.setIsDaytime(table.getString(r,7));
 
-    library.push(newClip);
+    // library.push(newClip);
+    fillDataLib(newClip);
   }
-
-  createVideos();
+  // createVideos();
+  fillMovieLib();
 }
 
-function createVideos()
+function fillDataLib(newClip)
 {
-  for(var i = 0 ; i < library.length; i++)
-  {
-    var vid = createVideo("clips/"+library[i].fileName);
-    vid.size(1080, 720);
-    vid.hide();
-    vids.push(vid);
-  }
-
-  vidsSize = vids.length-1;
+  var clipSpeed = parseInt(newClip.speed);
+  var clipDirection = newClip.direction;
+  var clipDirectionInt = directionToInt(clipDirection)
+  dataLib[clipSpeed][clipDirectionInt].push(newClip);
 }
+
+function directionToInt(direction)
+{
+  if(direction == "right")
+  {
+    return 2;
+  }
+  else if (direction == "left")
+  {
+    return 0;
+  }
+  else//straight
+  {
+    return 1;
+  }
+}
+
+function fillMovieLib()
+{
+  print(dataLib.length);
+  for(var i = 0; i < 6; i++)
+  {
+    for(var j = 0; j < 3; j++)
+    {
+      for(var k = 0; k < dataLib[i][j].length; k++)
+      {
+        var vid = createVideo("../clips/"+dataLib[i][j][k].fileName);
+        vid.size(1080, 720);
+        vid.hide();
+        movieLib[i][j].push(vid);
+      }
+      print("datalib i"+ i+" j: "+ j +" k: "+ k+ " :"+dataLib[i][j].length);
+    }
+  }
+}
+
+
+
 
 function Clip()
 {
