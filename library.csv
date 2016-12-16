@@ -1,11 +1,11 @@
 id,direction,speedCategory,special,filename,movie,year,isDaytime
-1,left,3,,b_fast_left.mp4,Bullitt,1968,TRUE
-2,left,3,,b_fast_left3.mp4,Bullitt,1968,TRUE
-3,left,3,,b_fast_left4.mp4,Bullitt,1968,TRUE
-4,left,3,,b_fast_left5.mp4,Bullitt,1968,TRUE
-5,left,3,,b_fast_left6.mp4,Bullitt,1968,TRUE
-6,right,3,,b_fast_right.mp4,Bullitt,1968,TRUE
-7,right,3,,b_fast_right2.mp4,Bullitt,1968,TRUE
+1,left,2,,b_fast_left.mp4,Bullitt,1968,TRUE
+2,left,2,,b_fast_left3.mp4,Bullitt,1968,TRUE
+3,left,2,,b_fast_left4.mp4,Bullitt,1968,TRUE
+4,left,2,,b_fast_left5.mp4,Bullitt,1968,TRUE
+5,left,2,,b_fast_left6.mp4,Bullitt,1968,TRUE
+6,right,2,,b_fast_right.mp4,Bullitt,1968,TRUE
+7,right,2,,b_fast_right2.mp4,Bullitt,1968,TRUE
 8,straight,0,"takeoff,fast",b_fast_straight.mp4,Bullitt,1968,TRUE
 9,left,1,,b_slow_left.mp4,Bullitt,1968,TRUE
 10,left,2,,b_slow_left2.mp4,Bullitt,1968,TRUE
@@ -13,51 +13,51 @@ id,direction,speedCategory,special,filename,movie,year,isDaytime
 12,straight,0,"closeup,takeoff",jr_accelerate_1.mp4,Jack Reacher,2012,FALSE
 13,straight,1,brakeoff,jr_brake.mp4,Jack Reacher,2012,FALSE
 14,straight,2,brakeoff,jr_brake2.mp4,Jack Reacher,2012,FALSE
-15,straight,3,crash,jr_crash1.mp4,Jack Reacher,2012,FALSE
+15,straight,2,crash,jr_crash1.mp4,Jack Reacher,2012,FALSE
 16,straight,2,"crash,decision",jr_decision1.mp4,Jack Reacher,2012,FALSE
-17,straight,3,"crash,brakeoff",jr_decision2_right.mp4,Jack Reacher,2012,FALSE
-18,straight,3,"decision,left",jr_decision3_left.mp4,Jack Reacher,2012,FALSE
-19,left,3,left,jr_fast_left_1.mp4,Jack Reacher,2012,FALSE
+17,straight,2,"crash,brakeoff",jr_decision2_right.mp4,Jack Reacher,2012,FALSE
+18,straight,2,"decision,left",jr_decision3_left.mp4,Jack Reacher,2012,FALSE
+19,left,2,left,jr_fast_left_1.mp4,Jack Reacher,2012,FALSE
 20,left,2,left,jr_fast_left.mp4,Jack Reacher,2012,FALSE
-21,right,3,"brakeoff,crash",jr_fast_right_crash.mp4,Jack Reacher,2012,FALSE
+21,right,2,"brakeoff,crash",jr_fast_right_crash.mp4,Jack Reacher,2012,FALSE
 22,right,2,,jr_fast_right2.mp4,Jack Reacher,2012,FALSE
 23,right,2,,jr_fast_right3.mp4,Jack Reacher,2012,FALSE
 24,right,2,wild,jr_fast_rlrl.mp4,Jack Reacher,2012,FALSE
-25,straight,3,tunnel,jr_fast_straight_tunnel.mp4,Jack Reacher,2012,FALSE
-26,straight,3,bridge,jr_fast_straight.mp4,Jack Reacher,2012,FALSE
-27,straight,3,,jr_fast_straight2.mp4,Jack Reacher,2012,FALSE
-28,straight,3,,jr_fast_straight3.mp4,Jack Reacher,2012,FALSE
+25,straight,2,tunnel,jr_fast_straight_tunnel.mp4,Jack Reacher,2012,FALSE
+26,straight,2,bridge,jr_fast_straight.mp4,Jack Reacher,2012,FALSE
+27,straight,2,,jr_fast_straight2.mp4,Jack Reacher,2012,FALSE
+28,straight,2,,jr_fast_straight3.mp4,Jack Reacher,2012,FALSE
 29,straight,0,gear,jr_gearbox.mp4,Jack Reacher,2012,FALSE
 30,reverse,0,reverse,jr_reverse.mp4,Jack Reacher,2012,FALSE
 31,straight,0,stall,jr_stalling_start.mp4,Jack Reacher,2012,FALSE
 32,straight,0,stall,jr_stalling.mp4,Jack Reacher,2012,FALSE
-33,straight,3,crash,r_fast_left_boom.mp4,Ronin,1998,TRUE
-34,straight,3,"crash,tunnel",r_fast_tunnel_boom.mp4,Ronin,1998,TRUE
+33,straight,2,crash,r_fast_left_boom.mp4,Ronin,1998,TRUE
+34,straight,2,"crash,tunnel",r_fast_tunnel_boom.mp4,Ronin,1998,TRUE
 35,left,2,uturn,r_fast_left_uturn.mp4,Ronin,1998,TRUE
 36,left,2,,r_fast_left.mp4,Ronin,1998,TRUE
-37,left,3,,r_fast_left2.mp4,Ronin,1998,TRUE
-38,left,3,,r_fast_left3.mp4,Ronin,1998,TRUE
-39,right,3,,r_fast_right.mp4,Ronin,1998,TRUE
-40,right,3,,r_fast_right2.mp4,Ronin,1998,TRUE
-41,right,3,,r_fast_right3.mp4,Ronin,1998,TRUE
+37,left,2,,r_fast_left2.mp4,Ronin,1998,TRUE
+38,left,2,,r_fast_left3.mp4,Ronin,1998,TRUE
+39,right,2,,r_fast_right.mp4,Ronin,1998,TRUE
+40,right,2,,r_fast_right2.mp4,Ronin,1998,TRUE
+41,right,2,,r_fast_right3.mp4,Ronin,1998,TRUE
 42,right,2,tunnel,r_fast_right4.mp4,Ronin,1998,TRUE
-43,right,3,brakeoff,r_fast_shift_uturn_brake.mp4,Ronin,1998,TRUE
-44,straight,3,crash,r_fast_straight_boom.mp4,Ronin,1998,TRUE
-45,straight,3,opposite,r_fast_straight_traffic.mp4,Ronin,1998,TRUE
-46,straight,3,opposite,r_fast_straight_traffic2.mp4,Ronin,1998,TRUE
-47,straight,3,"opposite,tunnel",r_fast_straight_tunnel.mp4,Ronin,1998,TRUE
-48,straight,3,,r_fast_straight.mp4,Ronin,1998,TRUE
-49,straight,3,,r_fast_straight2.mp4,Ronin,1998,TRUE
-50,straight,3,,r_fast_straight3.mp4,Ronin,1998,TRUE
-51,straight,3,,r_fast_straight4.mp4,Ronin,1998,TRUE
-52,straight,3,,r_fast_straight5.mp4,Ronin,1998,TRUE
-53,straight,3,"tunnel,crash",r_fast_tunnel_boom.mp4,Ronin,1998,TRUE
-54,straight,3,crash,d2_crash.mp4,Drive,2011,TRUE
-55,right,3,,d2_fast_right.mp4,Drive,2011,TRUE
-56,straight,3,,d2_fast_straight.mp4,Drive,2011,TRUE
-57,straight,3,,d2_fast_straight2.mp4,Drive,2011,TRUE
-58,straight,3,"reverse,opposite",d2_reverse_brake.mp4,Drive,2011,TRUE
-59,right,3,,d2_right.mp4,Drive,2011,TRUE
+43,right,2,brakeoff,r_fast_shift_uturn_brake.mp4,Ronin,1998,TRUE
+44,straight,2,crash,r_fast_straight_boom.mp4,Ronin,1998,TRUE
+45,straight,2,opposite,r_fast_straight_traffic.mp4,Ronin,1998,TRUE
+46,straight,2,opposite,r_fast_straight_traffic2.mp4,Ronin,1998,TRUE
+47,straight,2,"opposite,tunnel",r_fast_straight_tunnel.mp4,Ronin,1998,TRUE
+48,straight,2,,r_fast_straight.mp4,Ronin,1998,TRUE
+49,straight,2,,r_fast_straight2.mp4,Ronin,1998,TRUE
+50,straight,2,,r_fast_straight3.mp4,Ronin,1998,TRUE
+51,straight,2,,r_fast_straight4.mp4,Ronin,1998,TRUE
+52,straight,2,,r_fast_straight5.mp4,Ronin,1998,TRUE
+53,straight,2,"tunnel,crash",r_fast_tunnel_boom.mp4,Ronin,1998,TRUE
+54,straight,2,crash,d2_crash.mp4,Drive,2011,TRUE
+55,right,2,,d2_fast_right.mp4,Drive,2011,TRUE
+56,straight,2,,d2_fast_straight.mp4,Drive,2011,TRUE
+57,straight,2,,d2_fast_straight2.mp4,Drive,2011,TRUE
+58,straight,2,"reverse,opposite",d2_reverse_brake.mp4,Drive,2011,TRUE
+59,right,2,,d2_right.mp4,Drive,2011,TRUE
 60,left,0,"takeoff,fast",d2_takeoff.mp4,Drive,2011,TRUE
 61,left,2,,drive_fast_left.mp4,Drive,2011,FALSE
 62,left,2,,drive_fast_left3.mp4,Drive,2011,FALSE
@@ -65,7 +65,7 @@ id,direction,speedCategory,special,filename,movie,year,isDaytime
 64,right,1,,drive_fast_right.mp4,Drive,2011,FALSE
 65,right,1,,drive_fast_right2.mp4,Drive,2011,FALSE
 66,straight,2,bridge,drive_fast_straight.mp4,Drive,2011,FALSE
-67,straight,3,,drive_fast_straight2.mp4,Drive,2011,FALSE
+67,straight,2,,drive_fast_straight2.mp4,Drive,2011,FALSE
 68,straight,0,"loop,idle",drive_idle_loop.mp4,Drive,2011,FALSE
 69,straight,0,idle,drive_idle_mid.mp4,Drive,2011,FALSE
 70,straight,2,brakeoff,drive_slow_down.mp4,Drive,2011,FALSE
@@ -74,9 +74,9 @@ id,direction,speedCategory,special,filename,movie,year,isDaytime
 73,right,1,,drive_slow_start.mp4,Drive,2011,FALSE
 74,straight,0,"takeoff,slow",drive_speedup.mp4,Drive,2011,FALSE
 75,straight,0,"takeoff,fast",drive_speedup2.mp4,Drive,2011,FALSE
-76,left,3,,dk_fast_left.mp4,The Dark Knight,2008,FALSE
+76,left,2,,dk_fast_left.mp4,The Dark Knight,2008,FALSE
 77,right,2,,dk_fast_right.mp4,The Dark Knight,2008,FALSE
-78,straight,3,crash,dk_fast_straight_boom.mp4,The Dark Knight,2008,FALSE
-79,straight,3,crash,dk_fast_straight_boom2.mp4,The Dark Knight,2008,FALSE
-80,straight,3,decision,dk_fast_straight_hitme.mp4,The Dark Knight,2008,FALSE
+78,straight,2,crash,dk_fast_straight_boom.mp4,The Dark Knight,2008,FALSE
+79,straight,2,crash,dk_fast_straight_boom2.mp4,The Dark Knight,2008,FALSE
+80,straight,2,decision,dk_fast_straight_hitme.mp4,The Dark Knight,2008,FALSE
 81,straight,0,"takeoff,fast",dk_start.mp4,The Dark Knight,2008,FALSE

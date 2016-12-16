@@ -1,22 +1,14 @@
-var vids = [];
-var frameRate;
-
 var table;
 
 var speedRate = 1;
 
-var currI = 0;
-var currJ = 0;
-var currK = 0;
+var currI = 0; // speed
+var currJ = 0; // direction
+var currK = 0; // random video
 
-var speedometer;
-var engineStart;
-var engineStall;
-var engineFinish;
-
-var right = "right";
-var left = "left";
-var neutral = "default";
+var right = "RIGHT";
+var left = "LEFT";
+var neutral = "DEFAULT";
 
 var gasVal = 0;
 var brakeVal = 0;
@@ -26,14 +18,38 @@ var power = 0;
 var velocity = 0;
 var speed = 0;
 var direction = "default";
-var drag = 0.992;
+var drag = 0.995;
 var acceleration;
+
+var songs = [];
+var song;
+
+var song1;
+var song2;
+var song3;
+var song4;
+
+var staticNoise;
 
 function preload() {
   setupIgnition();
-  table = loadTable("library.csv", "csv", "header");
+  loadSongs();
+  table = loadTable("libraryV2.csv", "csv", "header");
   console.log("finished preload");
+}
 
+function loadSongs()
+{
+  song = loadSound("/assets/1.mp3");
+
+  song1 = loadSound("/assets/1.mp3");
+  song2 = loadSound("/assets/2.mp3");
+  song3 = loadSound("/assets/3.mp3");
+  song4 = loadSound("/assets/4.mp3");
+
+  staticNoise = loadSound("/assets/static.wav");
+
+  songs = [song1, song2, song3, song4];
 }
 
 function setupIgnition()
@@ -47,45 +63,42 @@ function setup() {
   noCanvas();
   serialSetup();
 
-
   initLibs();
   fillLibrary();
 
-  console.log("library finished");
-
   speedometer = select("#speedometer");
-  speedometer.value(0);
+  speedometer.hide();
+  createCanvas(displayWidth, displayHeight);
+  preStart();
 }
-
 
 function serialSetup() {
   serial = new p5.SerialPort(); // make a new instance of  serialport library
   serial.on('list', printList); // callback function for serialport list event
   serial.on('data', serialEvent); // callback for new data coming in
   serial.list(); // list the serial ports
-  serial.open("/dev/cu.usbmodemFD131"); // open a port
+  serial.open("/dev/cu.usbmodem1411"); // open a port
 }
 
 
+function printList(portList) {
+  for (var i = 0; i < portList.length; i++) {
+    println(i + " " + portList[i]);
+  }
+}
 
+var gasVal = 0;
+var brakeVal = 0;
+var radioVal = 0;
 function serialEvent() {
   var inString = serial.readLine();
-  if (inString.includes(",")) {
+  if (inString.includes(",") && isEngineOn) {
 		var values = inString.split(",");
 
-    var gasVal = parseFloat(values[0]);
-    var brakeVal = parseFloat(values[1]);
-
-    if (speedRate < 3) {
-      speedRate += 0.20*gasVal;
-      movieLib[currI][currJ][currK].speed(speedRate);
-    }
-
-    if (speedRate >= 0) {
-      speedRate -= 0.35*brakeVal;
-      movieLib[currI][currJ][currK].speed(speedRate);
-    }
-    // console.log(vids[currIndex].speed());
+    gasVal = parseFloat(values[0]);
+    brakeVal = parseFloat(values[1]);
+    // print("gasVal: "+ gasVal);
+    // print("brakeVal: "+ brakeVal);
   }
   else if (inString.includes("i:"))
   {
@@ -94,56 +107,163 @@ function serialEvent() {
 
     startCar(ignitionVal);
   }
+  else if (inString.includes("r:") && isEngineOn)
+  {
+    var vals = inString.split(":");
+    radioVal = vals[1];
+
+    changeRadioStation(radioVal);
+  }
+  else if (inString.includes("static") && isEngineOn)
+  {
+    if(inString.includes("off"))
+    {
+      pauseRadioStatic();
+    }
+    else {
+      playRadioStatic();
+    }
+  }
   else if (inString.length > 0) {
     if (inString === right) {
       direction = "right";
-      turnWheel();
+      updateCarStatus();
     } else if (inString === left) {
       direction = "left";
-      turnWheel();
+      updateCarStatus();
     } else if (inString === neutral) {
       direction = "straight";
     }
   }
 }
 
-function printList(portList) {
-  for (var i = 0; i < portList.length; i++) {
-    // Display the list the console:
-    println(i + " " + portList[i]);
-  }
-}
-
-
 function draw()
 {
-  updateSpeed();
+  background(0);
+  updateSpeedWithPedal();
+  if(playingSong != null)
+    playingSong.setVolume(0.8);
+  // updateSpeed();
 }
 
 function updateSpeed()
 {
+
+  if(!keyIsPressed)
+  {
+    direction = "straight";
+  }
   if(keyIsDown(UP_ARROW))
   {
     if(power < 0.1)
     {
       power+=0.0005;
-
     }
     velocity += power;
+    if (speedRate < 3) {
+      speedRate += 0.001;
+    }
+    else {
+      {
+        speedRate = 3;
+      }
+    }
   }
   else {
-    power *= 0.95;
+    power *= 0.99;
     velocity*=drag;
+    if(speedRate >= 1)
+    {
+      speedRate -= 0.002;
+    }
   }
 
   if(keyIsDown(DOWN_ARROW))
   {
     velocity *= 0.95;
+    if(speedRate>1)
+    {
+      speedRate -= 0.02;
+    }
+  }
+
+  movieLib[currI][currJ][currK].speed(speedRate);
+  if(playingSong!=null)
+    playingSong.rate(0.75+speedRate/3);
+
+  var roundedVelocity = Math.round(velocity);
+  speedometer.html(roundedVelocity + " MPH"); ///
+  speed = roundedVelocity;
+}
+
+function updateSpeedWithPedal()
+{
+  if(gasVal > 300)
+  {
+    if(gasVal > 900)
+    gasVal*1.5;
+    var gasMultiplier = 1 + gasVal / 200;
+
+    if(power < 0.1)
+    {
+      power+=0.0002 * gasMultiplier;
+    }
+
+    velocity += power;
+
+    if (speedRate < 2.5) {
+      speedRate += 0.001 * gasMultiplier;
+    }
+    else {
+      {
+        speedRate = 2.5;
+      }
+    }
+  }
+  else
+  {
+    power *= 0.98;
+    velocity*=drag;
+
+    if(speedRate >= 0.80)
+    {
+      speedRate -= 0.005;
+    }
+  }
+
+  if(brakeVal > 400)
+  {
+    var brakeMultiplier = 1+brakeVal/1023
+    velocity *= 0.96*brakeMultiplier;
+    if(speedRate>0.25)
+    {
+      speedRate -= 0.01;
+    }
+  }
+  else
+  {
+    if(speedRate < 1)
+    {
+      speedRate += 0.003;
+    }
+  }
+
+  if(velocity >= 200)
+  {
+    velocity = 200;
+  }
+
+  movieLib[currI][currJ][currK].speed(speedRate);
+  if(playingSong!=null)
+  {
+    playingSong.rate(0.7+speedRate/3);
   }
 
   var roundedVelocity = Math.round(velocity);
   speedometer.html(roundedVelocity + " MPH");
-  speed = roundedVelocity
+  speed = roundedVelocity;
+
+  // print("speedRate: "+speedRate);
 }
 
 function keyPressed() {
@@ -151,143 +271,103 @@ function keyPressed() {
   // print(direction);
   if (keyCode === LEFT_ARROW) {
     direction = "left";
-    turnWheel();
+    updateCarStatus();
   } else if (keyCode === RIGHT_ARROW) {
     direction = "right";
-    turnWheel();
-  } else if (keyCode === UP_ARROW) {
-    power+=0.001;
-    if (speedRate < 3) {
-      speedRate += 0.10;
-      movieLib[currI][currJ][currK].speed(speedRate);
-    }
-  } else if (keyCode === DOWN_ARROW) {
-    velocity *= 0.9;
-    if (speedRate >= 0) {
-      speedRate -= 0.10;
-      movieLib[currI][currJ][currK].speed(speedRate);
-    }
+    updateCarStatus();
   } else if (keyCode === ENTER)
   {
-    start();
+    startCar(100);
+  }else if (keyCode === DELETE)
+  {
+    stop();
   }
+
 }
 
-
-function turnWheel() // true if left, false if right
+function updateCarStatus() // true if left, false if right
 {
-  print("i: " + currI);
-  print("j: " + currJ);
-  print("k: " + currK);
-  print(movieLib[currI].length);
-  movieLib[currI][currJ][currK].pause();
-  movieLib[currI][currJ][currK].hide();
+  var tempI = currI;
+  var tempJ = currJ;
+  var tempK = currK;
   getNewIndices();
-  movieLib[currI][currJ][currK].speed(speedRate);
+  // movieLib[currI][currJ][currK].speed(speedRate);
+
+  movieLib[tempI][tempJ][tempK].stop();
+  movieLib[tempI][tempJ][tempK].hide();
   movieLib[currI][currJ][currK].show();
-  movieLib[currI][currJ][currK].loop();
+  movieLib[currI][currJ][currK].volume(0.8);
+  movieLib[currI][currJ][currK].play();
+  movieLib[currI][currJ][currK].onended(playNext);
+
+}
+
+function playNext()
+{
+  updateCarStatus();
 }
 
 function velocityIntoCategory()
 {
-  if(speed >= 0 && speed < 15)
-  {
-    return 0;
-  }
-  else if(speed >= 15 && speed < 40)
-  {
-    return 1;
-  }
-  else if(speed >= 40 && speed < 90)
-  {
-    return 2;
-  }
-  else if(speed >= 90 && speed < 150)
-  {
-    return 3;
-  }
-  else if(speed >= 150)
-  {
-    return 3;
-  }
-
+  // if(speed >= 0 && speed < 5)
+  // {
+  //   return 0;
+  // }
+  // else if(speed >= 5 && speed < 45)
+  // {
+  //   return 1;
+  // }
+  // else if(speed >= 45)
+  // {
+  //   return 2;
+  // }
+  return 2;
 }
 
 function getNewIndices()
 {
   currI = velocityIntoCategory();
-  println("current i: " + currI);
-  println(direction);
+  // println("current i: " + currI);
+
   currJ = directionToInt(direction);
-  println("current j: " + currJ);
+  // println("current j: " + currJ);
 
   var currLib = movieLib[currI][currJ];
   var currLibLength = currLib.length;
+  var randomIndex = getRandomInt(0, currLibLength-1);
 
-  currK = getRandomInt(0, currLibLength-1);
-  println("current K: " + currK);
-
+  while(currK != randomIndex)
+  {
+    currK = getRandomInt(0, currLibLength-1);
+  }
+  // println("current K: " + currK);
 }
 
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-var isEngineOn = false;
-var isEngineTurningOn = false;
-function startCar(iVal)//iVal serial value from 0-100
-{
-  if(iVal <= 10)
-  {
-    //do nothing
-    isEngineTurningOn = false;
-    isEngineOn = false;
-    movieLib[currI][currJ][currK].hide();
-    movieLib[currI][currJ][currK].pause();
-  }
-  else if(iVal >10 && iVal<=80)
-  {
-    if(!isEngineOn) //if engine on already, don't start engine
-    {
-      if(!isEngineTurningOn)
-      {
-        //play start engine sound
-        engineStart.play();
-        isEngineTurningOn = true;
-      }
-      else
-      {
-        if(!engineStart.isPlaying())
-        {
-          if(!engineStall.isPlaying())
-          {
-          	engineStall.play();
-          }
-        }
-      }
-    }
-  }
-  else if(iVal>80)
-  {
-    if(!isEngineOn)
-    {
-      isEngineTurningOn = false;
-     	isEngineOn = true;
-      engineFinish.play();
-      start();
-      //play engine finish on
-    }
-  }
-}
 
 function start()
 {
+  movieLib[0][1][5].pause();//tom cruise
+  movieLib[0][1][5].hide();
   movieLib[currI][currJ][currK].show();
-  movieLib[currI][currJ][currK].loop();
+  movieLib[currI][currJ][currK].play();
+  movieLib[currI][currJ][currK].onended(playNext);
+}
+
+function preStart()
+{
+  currSong = songs[0];
+  movieLib[0][1][5].show();
+  movieLib[0][1][5].loop();
 }
 
 function stop()
 {
+  playingSong.pause();
  	movieLib[currI][currJ][currK].pause();
   movieLib[currI][currJ][currK].hide();
+  preStart();
 }

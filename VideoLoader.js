@@ -66,9 +66,10 @@ function directionToInt(direction)
   }
 }
 
+var div;
+
 function fillMovieLib()
 {
-  print(dataLib.length);
   for(var i = 0; i < 6; i++)
   {
     for(var j = 0; j < 3; j++)
@@ -76,7 +77,7 @@ function fillMovieLib()
       for(var k = 0; k < dataLib[i][j].length; k++)
       {
         var vid = createVideo("../clips/"+dataLib[i][j][k].fileName);
-        vid.size(1080, 720);
+        vid.size(AUTO, 720 );
         vid.hide();
         movieLib[i][j].push(vid);
       }
