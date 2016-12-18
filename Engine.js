@@ -9,7 +9,6 @@ function startCar(iVal)//iVal serial value from 0-100
 {
   if(iVal == 0)
   {
-    //do nothing
     isEngineTurningOn = false;
     isEngineOn = false;
     stop();

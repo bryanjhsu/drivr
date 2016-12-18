@@ -81,13 +81,10 @@ function fillMovieLib()
         vid.hide();
         movieLib[i][j].push(vid);
       }
-      print("datalib i"+ i+" j: "+ j +" k: "+ k+ " :"+dataLib[i][j].length);
+      // print("datalib i"+ i+" j: "+ j +" k: "+ k+ " :"+dataLib[i][j].length);
     }
   }
 }
-
-
-
 
 function Clip()
 {

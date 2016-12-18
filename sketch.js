@@ -35,7 +35,8 @@ function preload() {
   setupIgnition();
   loadSongs();
   table = loadTable("libraryV2.csv", "csv", "header");
-  console.log("finished preload");
+  serialSetup();
+  console.log("finished preloada");
 }
 
 function loadSongs()
@@ -61,13 +62,13 @@ function setupIgnition()
 
 function setup() {
   noCanvas();
-  serialSetup();
+
+    speedometer = select("#speedometer");
+    speedometer.hide();
 
   initLibs();
   fillLibrary();
 
-  speedometer = select("#speedometer");
-  speedometer.hide();
   createCanvas(displayWidth, displayHeight);
   preStart();
 }
@@ -77,7 +78,7 @@ function serialSetup() {
   serial.on('list', printList); // callback function for serialport list event
   serial.on('data', serialEvent); // callback for new data coming in
   serial.list(); // list the serial ports
-  serial.open("/dev/cu.usbmodem1411"); // open a port
+  serial.open("/dev/cu.usbmodem1451"); // open a port
 }
 
 
@@ -92,48 +93,52 @@ var brakeVal = 0;
 var radioVal = 0;
 function serialEvent() {
   var inString = serial.readLine();
-  if (inString.includes(",") && isEngineOn) {
-		var values = inString.split(",");
+  if(isEngineOn)
+  {
+    if (inString.includes(",")) {
+  		var values = inString.split(",");
 
-    gasVal = parseFloat(values[0]);
-    brakeVal = parseFloat(values[1]);
-    // print("gasVal: "+ gasVal);
-    // print("brakeVal: "+ brakeVal);
+      gasVal = parseFloat(values[0]);
+      brakeVal = parseFloat(values[1]);
+      // print("gasVal: "+ gasVal);
+      // print("brakeVal: "+ brakeVal);
+    }
+    else if (inString.includes("r:") && isEngineOn)
+    {
+      var vals = inString.split(":");
+      radioVal = vals[1];
+
+      changeRadioStation(radioVal);
+    }
+    else if (inString.includes("static") && isEngineOn)
+    {
+      if(inString.includes("off"))
+      {
+        pauseRadioStatic();
+      }
+      else {
+        playRadioStatic();
+      }
+    }
+    else if (inString.length > 0) {
+      if (inString === right) {
+        direction = "right";
+        updateCarStatus();
+      } else if (inString === left) {
+        direction = "left";
+        updateCarStatus();
+      } else if (inString === neutral) {
+        direction = "straight";
+      }
+    }
   }
-  else if (inString.includes("i:"))
+
+  if (inString.includes("i:"))
   {
     var vals = inString.split(":");
     ignitionVal = vals[1];
-
+    print(ignitionVal);
     startCar(ignitionVal);
-  }
-  else if (inString.includes("r:") && isEngineOn)
-  {
-    var vals = inString.split(":");
-    radioVal = vals[1];
-
-    changeRadioStation(radioVal);
-  }
-  else if (inString.includes("static") && isEngineOn)
-  {
-    if(inString.includes("off"))
-    {
-      pauseRadioStatic();
-    }
-    else {
-      playRadioStatic();
-    }
-  }
-  else if (inString.length > 0) {
-    if (inString === right) {
-      direction = "right";
-      updateCarStatus();
-    } else if (inString === left) {
-      direction = "left";
-      updateCarStatus();
-    } else if (inString === neutral) {
-      direction = "straight";
-    }
   }
 }
 
@@ -141,9 +146,10 @@ function draw()
 {
   background(0);
   updateSpeedWithPedal();
+    // updateSpeed();
   if(playingSong != null)
     playingSong.setVolume(0.8);
-  // updateSpeed();
+
 }
 
 function updateSpeed()
@@ -198,10 +204,14 @@ function updateSpeed()
 
 function updateSpeedWithPedal()
 {
-  if(gasVal > 300)
+  // print("speedrate: " + speedRate);
+  if(gasVal > 200)
   {
-    if(gasVal > 900)
-    gasVal*1.5;
+    if(gasVal > 700)
+    {
+        gasVal*1.5;
+    }
+
     var gasMultiplier = 1 + gasVal / 200;
 
     if(power < 0.1)
@@ -225,13 +235,13 @@ function updateSpeedWithPedal()
     power *= 0.98;
     velocity*=drag;
 
-    if(speedRate >= 0.80)
+    if(speedRate >= 0.85)
     {
       speedRate -= 0.005;
     }
   }
 
-  if(brakeVal > 400)
+  if(brakeVal > 105)
   {
     var brakeMultiplier = 1+brakeVal/1023
     velocity *= 0.96*brakeMultiplier;
@@ -277,7 +287,7 @@ function keyPressed() {
     updateCarStatus();
   } else if (keyCode === ENTER)
   {
-    startCar(100);
+    startCar(1);
   }else if (keyCode === DELETE)
   {
     stop();
@@ -296,7 +306,7 @@ function updateCarStatus() // true if left, false if right
   movieLib[tempI][tempJ][tempK].stop();
   movieLib[tempI][tempJ][tempK].hide();
   movieLib[currI][currJ][currK].show();
-  movieLib[currI][currJ][currK].volume(0.8);
+  movieLib[currI][currJ][currK].volume(0.9);
   movieLib[currI][currJ][currK].play();
   movieLib[currI][currJ][currK].onended(playNext);
 
@@ -350,8 +360,15 @@ function getRandomInt(min, max) {
 
 function start()
 {
+  if(playingSong != null)
+  {
+    playingSong.loop();
+  }
   movieLib[0][1][5].pause();//tom cruise
   movieLib[0][1][5].hide();
+  currI = 0;
+  currJ = 0;
+  currK = 0;
   movieLib[currI][currJ][currK].show();
   movieLib[currI][currJ][currK].play();
   movieLib[currI][currJ][currK].onended(playNext);
@@ -359,15 +376,20 @@ function start()
 
 function preStart()
 {
+  print("playing first video");
   currSong = songs[0];
+  print(dataLib[0][1][5].id);
   movieLib[0][1][5].show();
   movieLib[0][1][5].loop();
+  print("start")
 }
 
 function stop()
 {
+  print("stopped")
   playingSong.pause();
- 	movieLib[currI][currJ][currK].pause();
+  pauseRadioStatic();
+ 	movieLib[currI][currJ][currK].stop();
   movieLib[currI][currJ][currK].hide();
   preStart();
 }
